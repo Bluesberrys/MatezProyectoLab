@@ -1,4 +1,4 @@
--- Active: 1727143697253@@127.0.0.1@3306
+-- Active: 1727189343099@@127.0.0.1@3306@mathez
 CREATE DATABASE Mathez
 DEFAULT CHARACTER SET = 'utf8mb4';
 
@@ -44,7 +44,3 @@ CREATE TABLE Subtemas (
     id_tema INT,
     FOREIGN KEY (id_tema) REFERENCES Temas(id_tema)
 );
-
-
-
-SELECT * FROM Alumnos;

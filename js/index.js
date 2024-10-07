@@ -9,8 +9,10 @@ window.navigateToHome = function () {
 
 // Make logout function globally available
 window.logout = function () {
-  localStorage.removeItem("authToken");
-  window.location.href = "./index.html";
+  //localStorage.removeItem("authToken");
+  //window.location.href = "./index.php";
+  window.location.href = 'cerrar_al.php';
+
 };
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -57,35 +59,45 @@ document.addEventListener("DOMContentLoaded", function () {
     return true;
   }
 
-  registroForm.addEventListener("submit", function (event) {
-    event.preventDefault();
+  document.getElementById("registroForm").addEventListener("submit", function (event) {
+    event.preventDefault(); // Evita que el formulario se envíe de forma tradicional
 
-    const email = document.getElementById("email").value;
-    const passwd = document.getElementById("passwd").value;
+    const matricula = document.getElementById("matricula").value;
     const apellidoP = document.getElementById("apellidoP").value;
     const apellidoM = document.getElementById("apellidoM").value;
     const nombres = document.getElementById("nombres").value;
+    const email = document.getElementById("email").value;
+    const passwd = document.getElementById("passwd").value;
 
-    fetch("/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ apellidoP, apellidoM, nombres, email, passwd }),
+    fetch("registrarAl.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ matricula, apellidoP, apellidoM, nombres, email, passwd })
     })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          alert(`Registro exitoso! Tu número de cuenta es: ${data.numCta}`);
-          showView("login");
-        } else {
-          alert("Error en el registro: " + data.message);
+    .then((response) => {
+        // Verificar si la respuesta es correcta
+        if (!response.ok) {
+            throw new Error('Error en la red: ' + response.statusText);
         }
-      })
-      .catch((error) => {
+        return response.json();
+    })
+    .then((data) => {
+        // Procesar la respuesta del servidor
+        if (data.success) {
+            alert('Registro exitoso! Ya puedes iniciar sesión');
+            showView("login");
+        } else {
+            alert("Ya existe ese No. de Cuenta");
+        }
+    })
+    .catch((error) => {
+        // Manejar errores
         console.error("Error:", error);
-        alert("Ocurrió un error. Por favor, intenta de nuevo.");
-      });
+        alert("Ocurrió un error. Por favor, intenta de nuevo: ");
+        //alert("Ocurrió un error. Por favor, intenta de nuevo: " + error);
+    });
   });
 
   // Login form handling
@@ -97,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const numCta = document.getElementById("loginNumCta").value;
     const passwd = document.getElementById("loginPasswd").value;
 
-    fetch("/login", {
+    fetch("verificar_al.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -108,12 +120,13 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((data) => {
         if (data.success) {
           // Store the token in localStorage
-          localStorage.setItem("authToken", data.token);
-          alert("Login exitoso!");
+          //localStorage.setItem("authToken", data.token);
+          //alert("Login exitoso!");
           // Redirect to user dashboard or homepage
-          window.location.href = "./homepage.html";
+          window.location.href = "./homepage.php";
         } else {
-          alert("Error en el login: " + data.message);
+          alert(data.message);
+          //alert("Error en el login: " + data.message);
         }
       })
       .catch((error) => {
